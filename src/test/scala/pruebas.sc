@@ -2,4 +2,8 @@ import Huffman._
 
 val countList = ocurrencias(List('A', 'A','C','B','D','A','B'))
 
-listaDeHojasOrdenadas(countList)
+val treeList = listaDeHojasOrdenadas(countList)
+
+val newList = combinar(treeList)
+
+val newNewList = combinar(newList)
