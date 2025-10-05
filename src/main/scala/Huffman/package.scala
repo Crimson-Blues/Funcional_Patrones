@@ -25,6 +25,7 @@ package object Huffman {
   def cadenaALista(cad: String): List[Char] = cad.toList
 
   def ocurrencias(cars: List[Char]): List[(Char, Int)] = {
+    //Adds a character to the occurences list by comparing to characters in a received occurences list
     def classify(car: Char, countList: List[(Char, Int)]): List[(Char, Int)] = countList match {
       case Nil => List((car, 1))
       case (seenCar, count) :: xs =>
@@ -32,10 +33,9 @@ package object Huffman {
         else (seenCar, count) :: classify(car, xs)
     }
 
-    if (cars.isEmpty) List()
-    else {
-      val tailCount = ocurrencias(cars.tail)
-      classify(cars.head, tailCount)
+    cars match {
+      case Nil => List()
+      case head::xs => classify(head, ocurrencias(xs))
     }
   }
 
@@ -43,23 +43,23 @@ package object Huffman {
     def insertLeaf(leaf: Hoja, leafList: List[Hoja]): List[Hoja] = leafList match {
       case Nil => List(leaf)
       case head :: xs =>
-        if (leaf.peso < head.peso) leaf :: head :: xs
+        if (peso(leaf) < peso(head)) leaf :: head :: xs
         else head :: insertLeaf(leaf, xs)
     }
 
-    if (frecs.isEmpty) List()
-    else {
-      val (headChar, headCount) = frecs.head
-      val headLeaf = Hoja(headChar, headCount)
-      insertLeaf(headLeaf, listaDeHojasOrdenadas(frecs.tail))
+    frecs match {
+      case Nil => List()
+      case (headChar, headCount)::xs => 
+        val headLeaf = Hoja(headChar, headCount)
+        insertLeaf(headLeaf, listaDeHojasOrdenadas(xs))
     }
   }
 
   def listaUnitaria(arboles: List[ArbolH]): Boolean = {
-    if (arboles.isEmpty) false
-    else {
-      if (arboles.length == 1) true
-      else false
+    arboles match {
+      case Nil => false
+      case x::y::xs => false
+      case x::Nil => true
     }
   }
 
@@ -70,22 +70,22 @@ package object Huffman {
         val headPeso = peso(head)
         if (peso(tree) < headPeso) tree :: head :: xs
         else head :: insertTree(tree, xs)
-
     }
 
-    val newList = arboles match {
+    arboles match {
       case Nil => List()
       case arbol :: Nil => List(arbol)
       case arbolA :: arbolB :: xs => insertTree(hacerNodoArbolH(arbolA, arbolB), xs)
     }
-    newList
   }
 
   def hastaQue(cond: List[ArbolH] => Boolean, mezclar: List[ArbolH] => List[ArbolH])(listaOrdenadaArboles: List[ArbolH]): List[ArbolH] = {
-    if (listaOrdenadaArboles.isEmpty) List()
-    else {
-      if (cond(listaOrdenadaArboles)) listaOrdenadaArboles
-      else hastaQue(cond, mezclar)(mezclar(listaOrdenadaArboles))
+    listaOrdenadaArboles match {
+      case Nil => List()
+      case x::xs => 
+        if (cond(x::xs)) x::xs
+        else hastaQue(cond, mezclar)(mezclar(x::xs))
+      
     }
   }
 
@@ -97,7 +97,7 @@ package object Huffman {
   type Bit = Int
 
   def decodificar(arbol: ArbolH, bits: List[Bit]): List[Char] = {
-    def recorrer(actual: ArbolH, bitsRest: List[Bit]): (List[Char]) = actual match {
+    def recorrer(actual: ArbolH, bitsRest: List[Bit]): List[Char] = actual match {
       case Hoja(car, _) =>
         if (bitsRest.isEmpty) List(car) else car :: recorrer(arbol, bitsRest)
       case Nodo(izq, der, _, _) => bitsRest match {
