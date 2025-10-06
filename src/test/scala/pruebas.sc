@@ -11,3 +11,5 @@ val arbolCurry = hasta(treeList)
 
 val arbol = crearArbolDeHuffman(charList)
 
+val emptyTree = crearArbolDeHuffman(List(' '))
+

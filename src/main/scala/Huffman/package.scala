@@ -114,6 +114,26 @@ package object Huffman {
     }
   }
 
+  def decodificarSeparado(arbol: ArbolH, bits: List[Bit]): List[Char] = {
+    def recorrer(actual: ArbolH, bitsRest: List[Bit]): (List[Char], List[Bit]) = actual match {
+      case Hoja(car, _) => (List(car), bitsRest)
+      case Nodo(izq, der, _, _) => bitsRest match {
+        case Nil => (List(), bitsRest) //throw new Error("Bits insuficientes. No se puede decodificar")
+        case bit :: tail =>
+          if (bit == 0) recorrer(izq, tail)
+          else recorrer(der, tail)
+      }
+    }
+
+    bits match {
+      case Nil => List()
+      case x :: xs => {
+        val (car, bitRest) = recorrer(arbol, x::xs)
+        car ++ decodificarSeparado(arbol, bitRest)
+      }
+    }
+  }
+
   // Parte 4a: Codificando usando arboles de Huffman
   def codificar(arbol: ArbolH)(texto: List[Char]): List[Bit] = {
     def buscar(arbol: ArbolH, c: Char): List[Bit] = arbol match {
