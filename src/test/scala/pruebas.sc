@@ -5,8 +5,9 @@ val countList = ocurrencias(List('A', 'A','C','B','D','A','B'))
 
 val treeList = listaDeHojasOrdenadas(countList)
 
-val newList = combinar(treeList)
+val hasta =  hastaQue(listaUnitaria,combinar)
 
-val newNewList = combinar(newList)
+val arbolCurry = hasta(treeList)
 
-crearArbolDeHuffman(charList)
+val arbol = crearArbolDeHuffman(charList)
+

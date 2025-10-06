@@ -1,3 +1,5 @@
+import Huffman.ArbolH
+
 package object Huffman {
 
   abstract class ArbolH
@@ -49,7 +51,7 @@ package object Huffman {
 
     frecs match {
       case Nil => List()
-      case (headChar, headCount)::xs => 
+      case (headChar, headCount)::xs =>
         val headLeaf = Hoja(headChar, headCount)
         insertLeaf(headLeaf, listaDeHojasOrdenadas(xs))
     }
@@ -67,8 +69,7 @@ package object Huffman {
     def insertTree(tree: ArbolH, treeList: List[ArbolH]): List[ArbolH] = treeList match {
       case Nil => List(tree)
       case head :: xs =>
-        val headPeso = peso(head)
-        if (peso(tree) < headPeso) tree :: head :: xs
+        if (peso(tree) < peso(head)) tree :: head :: xs
         else head :: insertTree(tree, xs)
     }
 
@@ -82,10 +83,10 @@ package object Huffman {
   def hastaQue(cond: List[ArbolH] => Boolean, mezclar: List[ArbolH] => List[ArbolH])(listaOrdenadaArboles: List[ArbolH]): List[ArbolH] = {
     listaOrdenadaArboles match {
       case Nil => List()
-      case x::xs => 
+      case x::xs =>
         if (cond(x::xs)) x::xs
         else hastaQue(cond, mezclar)(mezclar(x::xs))
-      
+
     }
   }
 
@@ -107,9 +108,10 @@ package object Huffman {
           else recorrer(der, tail)
       }
     }
-
-    if (bits.isEmpty) List()
-    else recorrer(arbol, bits)
+    bits match {
+      case Nil => List()
+      case x::xs => recorrer(arbol, x::xs)
+    }
   }
 
   // Parte 4a: Codificando usando arboles de Huffman
@@ -134,13 +136,12 @@ package object Huffman {
   type TablaCodigos = List[(Char, List[Bit])]
 
   def codigoEnBits(tabla: TablaCodigos)(car: Char): List[Bit] = {
-    val listaBits = tabla match {
+    tabla match {
       case Nil => List()
       case (c, bits) :: tail =>
         if (c == car) bits
         else codigoEnBits(tail)(car)
     }
-    listaBits
   }
 
 
@@ -153,14 +154,13 @@ package object Huffman {
   }
 
   def convertir(arbol: ArbolH): TablaCodigos = {
-    val tabla = arbol match {
+    arbol match {
       case Hoja(c, _) => List((c, List()))
       case Nodo(izq, der, _, _) =>
         val tablaIzq = convertir(izq)
         val tablaDer = convertir(der)
         mezclarTablasDeCodigos(tablaIzq, tablaDer)
     }
-    tabla
   }
 
   def codificarRapido(arbol: ArbolH)(texto: List[Char]): List[Bit] = {
