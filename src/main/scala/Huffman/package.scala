@@ -67,7 +67,7 @@ package object Huffman {
 
   def combinar(arboles: List[ArbolH]): List[ArbolH] = {
     def insertTree(tree: ArbolH, treeList: List[ArbolH]): List[ArbolH] = treeList match {
-      case Nil => List(tree)
+      case Nil  => List(tree)
       case head :: xs =>
         if (peso(tree) < peso(head)) tree :: head :: xs
         else head :: insertTree(tree, xs)
@@ -86,7 +86,6 @@ package object Huffman {
       case x::xs =>
         if (cond(x::xs)) x::xs
         else hastaQue(cond, mezclar)(mezclar(x::xs))
-
     }
   }
 
@@ -127,10 +126,9 @@ package object Huffman {
 
     bits match {
       case Nil => List()
-      case x :: xs => {
+      case x :: xs =>
         val (car, bitRest) = recorrer(arbol, x::xs)
         car ++ decodificarSeparado(arbol, bitRest)
-      }
     }
   }
 
@@ -185,10 +183,11 @@ package object Huffman {
 
   def codificarRapido(arbol: ArbolH)(texto: List[Char]): List[Bit] = {
     val tabla = convertir(arbol)
-    def recorrer(chars: List[Char]): List[Bit] = chars match {
+    def recorrer(cars: List[Char]): List[Bit] = cars match {
       case Nil => List()
       case head :: tail => codigoEnBits(tabla)(head) ++ recorrer(tail)
     }
     recorrer(texto)
   }
+
 }
